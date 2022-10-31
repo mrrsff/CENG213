@@ -17,8 +17,9 @@ public:
     void moveActiveTabTo(int index);
     void changeActiveTabTo(int index);
 
-    void closeTab(Node<Tab> &tab);
     void addTab(Node<Tab> &tab);
+
+    void print();
 
 private:
     LinkedList<Tab> tabs;

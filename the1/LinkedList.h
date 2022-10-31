@@ -171,6 +171,7 @@ void LinkedList<T>::append(const T &data)
         Node<T> *last = getLastNode();
         last->next = temp;
         temp->prev = last;
+        temp->next = NULL;
     }
     size++;
 }
@@ -262,22 +263,28 @@ template<class T>
 void LinkedList<T>::moveToIndex(int currentIndex, int newIndex)
 {
     /* TODO */
+    
     if(currentIndex > size) return;
-    if(newIndex > size){
-        newIndex = size;
-    }
+
     Node<T> *temp = getNodeAtIndex(currentIndex);
-    Node<T> *prev = temp->prev;
-    Node<T> *next = temp->next;
-    Node<T> *newNode = getNodeAtIndex(newIndex);
-    Node<T> *newPrev = newNode->prev;
-    Node<T> *newNext = newNode->next;
-    prev->next = next;
-    next->prev = prev;
-    newNode->next = temp;
-    temp->prev = newNode;
-    temp->next = newNext;
-    newNext->prev = temp;
+    
+    if(newIndex < size){
+        Node<T> *temp2 = getNodeAtIndex(newIndex);
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        temp->prev = temp2;
+        temp->next = temp2->next;
+        temp2->next = temp;
+    }
+    else{
+        size++;
+        Node<T> *last = getLastNode();
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        last->next = temp;
+        temp->prev = last;
+        temp->next = NULL;
+    }
 }
 
 template<class T>

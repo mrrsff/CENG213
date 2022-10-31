@@ -2,6 +2,7 @@
 
 Browser::Browser() {
     // TODO
+    
 }
 
 void Browser::newWindow() {
