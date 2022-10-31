@@ -316,17 +316,13 @@ void LinkedList<T>::removeAllNodes()
 {
     /* TODO */
     Node<T> *temp = head;
-    Node<T> *next = NULL;
+    Node<T> *next = temp->next;
     while(temp != NULL){
         if(temp->next != NULL){
             next = temp->next;
-            delete temp;
             temp = next;
         }
-        else{
-            delete temp;
-            delete next;
-        }
+        delete temp;
     }
     size = 0;
 }
