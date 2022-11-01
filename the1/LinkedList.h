@@ -171,7 +171,7 @@ void LinkedList<T>::append(const T &data)
         Node<T> *last = getLastNode();
         last->next = temp;
         temp->prev = last;
-        temp->next = NULL;
+        temp->next = head;
     }
     size++;
 }
@@ -201,7 +201,7 @@ void LinkedList<T>::insertAfterNode(const T &data, Node<T> *node)
     Node<T> *temp = new Node<T>(data);
     if(this->containsNode(node))
     {
-        if (node->next == NULL)
+        if (node->next == head)
         {
             node->next = temp;
             temp->prev = node;
@@ -247,7 +247,7 @@ int LinkedList<T>::getIndex(Node<T> *node) const
     /* TODO */
     Node<T> *temp = head;
     int index = 0;
-    while (temp != NULL)
+    while (temp != head)
     {
         if (temp == node)
         {
@@ -283,7 +283,7 @@ void LinkedList<T>::moveToIndex(int currentIndex, int newIndex)
         temp->next->prev = temp->prev;
         last->next = temp;
         temp->prev = last;
-        temp->next = NULL;
+        temp->next = head;
     }
 }
 
@@ -324,8 +324,8 @@ void LinkedList<T>::removeAllNodes()
     /* TODO */
     Node<T> *temp = head;
     Node<T> *next = temp->next;
-    while(temp != NULL){
-        if(temp->next != NULL){
+    while(temp != getFirstNode()){
+        if(temp->next != head){
             next = temp->next;
             temp = next;
         }
