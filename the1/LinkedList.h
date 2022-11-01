@@ -57,7 +57,7 @@ LinkedList<T>::LinkedList(const LinkedList<T> &obj)
 {
     /* TODO */
     head = obj.head;
-    size = obj.size;
+    size = obj.getSize();
 }
 
 template<class T>
@@ -74,7 +74,7 @@ LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &rhs)
     if (this != &rhs)
     {
         removeAllNodes();
-        head = rhs.head;
+        for(int i=0; i<rhs.getSize();i++) append(rhs.getNodeAtIndex(i)->data);
         size = rhs.size;
     }
     return *this;
@@ -99,14 +99,11 @@ bool LinkedList<T>::containsNode(Node<T> *node) const
 {
     /* TODO */
     Node<T> *temp = head;
-    while (temp != NULL)
-    {
-        if (temp == node)
-        {
-            return true;
-        }
+    do{
+        if(temp == node) return true;
         temp = temp->next;
     }
+    while(temp != head);
     return false;
 }
 
@@ -122,10 +119,7 @@ Node<T> *LinkedList<T>::getLastNode() const
 {
     /* TODO */
     Node<T> *temp = head;
-    while (temp->next != NULL)
-    {
-        temp = temp->next;
-    }
+    for(int i=0;i<size-1;i++) temp = temp->next;
     return temp;
 }
 
@@ -134,14 +128,13 @@ Node<T> *LinkedList<T>::getNode(const T &data) const
 {
     /* TODO */
     Node<T> *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->data == data)
-        {
-            return temp;
-        }
+    if(head == NULL) return NULL;
+    do{
+        if(temp->data == data) return temp;
         temp = temp->next;
     }
+    while(temp != head);
+    if(temp->data == data) return temp;
     return NULL;
 }
 
@@ -165,6 +158,8 @@ void LinkedList<T>::append(const T &data)
     if (head == NULL)
     {
         head = temp;
+        head->next = head;
+        head->prev = head;
     }
     else
     {
@@ -184,9 +179,14 @@ void LinkedList<T>::prepend(const T &data)
     if (head == NULL)
     {
         head = temp;
+        head->next = head;
+        head->prev = head;
     }
     else
     {
+        Node<T> *last = getLastNode();
+        last->next = temp;
+        temp->prev = last;
         temp->next = head;
         head->prev = temp;
         head = temp;
@@ -264,33 +264,35 @@ void LinkedList<T>::moveToIndex(int currentIndex, int newIndex)
 {
     /* TODO */
     
-    if(currentIndex > size) return;
-
+    if(currentIndex > size || currentIndex == newIndex) return;
     Node<T> *temp = getNodeAtIndex(currentIndex);
-    
-    if(newIndex < size){
-        Node<T> *temp2 = getNodeAtIndex(newIndex);
-        temp->prev->next = temp->next;
-        temp->next->prev = temp->prev;
-        temp->prev = temp2;
-        temp->next = temp2->next;
-        temp2->next = temp;
-    }
-    else{
-        size++;
-        Node<T> *last = getLastNode();
-        temp->prev->next = temp->next;
-        temp->next->prev = temp->prev;
-        last->next = temp;
-        temp->prev = last;
-        temp->next = head;
-    }
+    Node<T> *temp2 = getNodeAtIndex(newIndex);
+    std::cout << "before" << std::endl;
+    std::cout << "temp data: " << temp->data <<std::endl;
+    std::cout << "temp next data: " << temp->next->data <<std::endl;
+    std::cout << "temp prev data: " << temp->prev->data <<std::endl;
+    std::cout << "temp2 data: " << temp2->data <<std::endl;
+    std::cout << "temp2 next data: " << temp2->next->data <<std::endl;
+    std::cout << "temp2 prev data: " << temp2->prev->data <<std::endl;
+    temp->next = temp2->next;
+    temp->prev->next = temp2;
+    temp2->prev = temp->prev;
+    temp->prev = temp2;
+    temp2->next = temp;
+    std::cout << "after" << std::endl;
+    std::cout << "temp data: " << temp->data <<std::endl;
+    std::cout << "temp next data: " << temp->next->data <<std::endl;
+    std::cout << "temp prev data: " << temp->prev->data <<std::endl;
+    std::cout << "temp2 data: " << temp2->data <<std::endl;
+    std::cout << "temp2 next data: " << temp2->next->data <<std::endl;
+    std::cout << "temp2 prev data: " << temp2->prev->data <<std::endl;
 }
 
 template<class T>
 void LinkedList<T>::removeNode(Node<T> *node)
 {
     /* TODO */
+    if(this->containsNode(node) == 0) return;
     Node<T> *temp = head;
     while(temp->next != node) temp = temp->next;
     temp->next = node->next;
@@ -302,11 +304,12 @@ template<class T>
 void LinkedList<T>::removeNode(const T &data)
 {
     /* TODO */
-    Node<T> *temp = head;
-    while(temp->data != data) temp = temp->next;
-    temp->prev->next = temp->next;
-    temp->next->prev = temp->prev;
-    delete temp;    
+    while(this->getNode(data) != NULL){
+        Node<T> *temp = this->getNode(data);
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        delete temp;
+    }
 }
 
 template<class T>
@@ -316,6 +319,7 @@ void LinkedList<T>::removeNodeAtIndex(int index)
     Node<T> *temp = getNodeAtIndex(index);
     temp->prev->next = temp->next;
     temp->next->prev = temp->prev;
+    delete temp;
 }
 
 template<class T>
@@ -324,12 +328,10 @@ void LinkedList<T>::removeAllNodes()
     /* TODO */
     Node<T> *temp = head;
     Node<T> *next = temp->next;
-    while(temp != getFirstNode()){
-        if(temp->next != head){
-            next = temp->next;
-            temp = next;
-        }
+    while(temp != head){
         delete temp;
+        temp = next;
+        next = temp->next;        
     }
     size = 0;
 }

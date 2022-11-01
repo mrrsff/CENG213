@@ -13,18 +13,10 @@ int main() {
     list->append(8);
     list->append(10);
     list->prepend(12);
-    list2 = new LinkedList<int>(*list);
-    list2->print();
-    cout << "here" << endl;
-    list2 = list;
-
-    list2->print();
-    cout << "Natural List is:" << endl;
-    for(int i=0;i < list->getSize();i++) cout << list->getNodeAtIndex(i)->data << endl;
-    cout << "List is:" << endl;
-    list->moveToIndex(1,6);
-    for(int i=0;i < list->getSize();i++) cout << list->getNodeAtIndex(i)->data << endl;
-    cout << list->getSize() << endl;
+    list->print();
+    list->moveToIndex(1,3);
+    list->print();  
+    /*cout << list->getSize() << endl;
     cout << list->isEmpty() << endl;
     cout << list->containsNode(list->getNodeAtIndex(1)) << endl;
     cout << list->getIndex(list->getNodeAtIndex(1)) << endl;
@@ -43,6 +35,6 @@ int main() {
     list->removeNodeAtIndex(1);
     list->print();
     list->removeAllNodes();
-    list->print();
+    list->print();*/
     return 0;
  }
