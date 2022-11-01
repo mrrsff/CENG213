@@ -14,9 +14,9 @@ int main() {
     list->append(10);
     list->prepend(12);
     list->print();
-    list->moveToIndex(1,3);
+    list->moveToIndex(0,9);
     list->print();  
-    /*cout << list->getSize() << endl;
+    cout << list->getSize() << endl;
     cout << list->isEmpty() << endl;
     cout << list->containsNode(list->getNodeAtIndex(1)) << endl;
     cout << list->getIndex(list->getNodeAtIndex(1)) << endl;
@@ -32,9 +32,12 @@ int main() {
     list->print();
     list->removeNode(5);
     list->print();
+    list->moveToIndex(10,1);
+    list->moveToIndex(1,9999);
     list->removeNodeAtIndex(1);
     list->print();
     list->removeAllNodes();
-    list->print();*/
+    cout << "list size is " << list->getSize() << endl;
+    list->print();
     return 0;
  }

@@ -49,6 +49,7 @@ template<class T>
 LinkedList<T>::LinkedList()
 {
     /* TODO */
+    head = NULL;
     size = 0;
 }
 
@@ -65,6 +66,7 @@ LinkedList<T>::~LinkedList()
 {
     /* TODO */
     removeAllNodes();
+    size = 0;
 }
 
 template<class T>
@@ -118,6 +120,7 @@ template<class T>
 Node<T> *LinkedList<T>::getLastNode() const
 {
     /* TODO */
+    if(isEmpty()) return NULL;
     Node<T> *temp = head;
     for(int i=0;i<size-1;i++) temp = temp->next;
     return temp;
@@ -127,8 +130,8 @@ template<class T>
 Node<T> *LinkedList<T>::getNode(const T &data) const
 {
     /* TODO */
+    if(isEmpty()) return NULL;
     Node<T> *temp = head;
-    if(head == NULL) return NULL;
     do{
         if(temp->data == data) return temp;
         temp = temp->next;
@@ -142,6 +145,7 @@ template<class T>
 Node<T> *LinkedList<T>::getNodeAtIndex(int index) const
 {
     /* TODO */
+    if(isEmpty()) return NULL;
     Node<T> *temp = head;
     for (int i = 0; i < index; i++)
     {
@@ -266,26 +270,16 @@ void LinkedList<T>::moveToIndex(int currentIndex, int newIndex)
     
     if(currentIndex > size || currentIndex == newIndex) return;
     Node<T> *temp = getNodeAtIndex(currentIndex);
+    Node<T> *tempnext = temp->next;
+    Node<T> *tempprev = temp->prev;
     Node<T> *temp2 = getNodeAtIndex(newIndex);
-    std::cout << "before" << std::endl;
-    std::cout << "temp data: " << temp->data <<std::endl;
-    std::cout << "temp next data: " << temp->next->data <<std::endl;
-    std::cout << "temp prev data: " << temp->prev->data <<std::endl;
-    std::cout << "temp2 data: " << temp2->data <<std::endl;
-    std::cout << "temp2 next data: " << temp2->next->data <<std::endl;
-    std::cout << "temp2 prev data: " << temp2->prev->data <<std::endl;
-    temp->next = temp2->next;
-    temp->prev->next = temp2;
-    temp2->prev = temp->prev;
+    Node<T> *temp2next = temp2->next;
+    tempprev->next = tempnext;
+    tempnext->prev = tempprev;
     temp->prev = temp2;
     temp2->next = temp;
-    std::cout << "after" << std::endl;
-    std::cout << "temp data: " << temp->data <<std::endl;
-    std::cout << "temp next data: " << temp->next->data <<std::endl;
-    std::cout << "temp prev data: " << temp->prev->data <<std::endl;
-    std::cout << "temp2 data: " << temp2->data <<std::endl;
-    std::cout << "temp2 next data: " << temp2->next->data <<std::endl;
-    std::cout << "temp2 prev data: " << temp2->prev->data <<std::endl;
+    temp->next = temp2next;
+    temp2next->prev = temp;
 }
 
 template<class T>

@@ -13,11 +13,13 @@ public:
     void newWindow();
     void closeWindow();
     void switchToWindow(int index);
-    void moveTab(Window &window1, Window &window2);
-    void mergeWindows(Window &source, Window &destination);
+    Window &getWindow(int index);
+    void moveTab(Window &from, Window &to);
+    void mergeWindows(Window &window1, Window &window2);
     void mergeAllWindows();
     void closeAllWindows();
     void closeEmptyWindows();
+    void print();
 
 private:
     LinkedList<Window> windows;

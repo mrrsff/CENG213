@@ -26,7 +26,7 @@ void Window::closeTab() {
     // TODO
     tabs.removeNodeAtIndex(activeTab);
     if(tabs.isEmpty()) activeTab = -1;
-    activeTab--;
+    else activeTab++;
 }
 
 void Window::moveActiveTabTo(int index) {
@@ -46,7 +46,7 @@ void Window::changeActiveTabTo(int index) {
 
 void Window::addTab(Node<Tab> &tab) {
     // TODO
-    tabs.insertAtIndex(tab.data, activeTab + 1);
+    tabs.append(tab.data);
 }
 
 void Window::print() {
