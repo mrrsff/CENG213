@@ -15,7 +15,10 @@ int main() {
     list->prepend(12);
     list->print();
     list->moveToIndex(0,9);
-    list->print();  
+    list->print();
+    list2 = list;
+    list2 = new LinkedList<int>(*list);
+    list2->print();
     cout << list->getSize() << endl;
     cout << list->isEmpty() << endl;
     cout << list->containsNode(list->getNodeAtIndex(1)) << endl;

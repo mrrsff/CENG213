@@ -28,8 +28,9 @@ Window &Browser::getWindow(int index) {
 void Browser::moveTab(Window &from, Window &to) {
     // TODO
     Tab tab = from.getActiveTab();
+    Node<Tab> *node = new Node<Tab>(tab);
     from.closeTab();
-    to.addTab(Node<Tab>(tab));
+    to.addTab(*node);
 }
 
 void Browser::mergeWindows(Window &window1, Window &window2) {

@@ -54,11 +54,14 @@ LinkedList<T>::LinkedList()
 }
 
 template<class T>
-LinkedList<T>::LinkedList(const LinkedList<T> &obj)
+LinkedList<T>::LinkedList(const LinkedList<T> &a)
 {
     /* TODO */
-    head = obj.head;
-    size = obj.getSize();
+    int temp = a.getSize();
+    size = 0;
+    for(int i=0;i<temp;i++){
+        append(a.getNodeAtIndex(i)->data);
+    }
 }
 
 template<class T>
@@ -66,18 +69,17 @@ LinkedList<T>::~LinkedList()
 {
     /* TODO */
     removeAllNodes();
-    size = 0;
 }
 
 template<class T>
 LinkedList<T> &LinkedList<T>::operator=(const LinkedList<T> &rhs)
 {
     /* TODO */
-    if (this != &rhs)
-    {
-        removeAllNodes();
-        for(int i=0; i<rhs.getSize();i++) append(rhs.getNodeAtIndex(i)->data);
-        size = rhs.size;
+    if(this == &rhs) return *this;
+    removeAllNodes();
+    int temp = rhs.getSize();
+    for(int i=0;i<temp;i++){
+        append(rhs.getNodeAtIndex(i)->data);
     }
     return *this;
 }
@@ -122,7 +124,9 @@ Node<T> *LinkedList<T>::getLastNode() const
     /* TODO */
     if(isEmpty()) return NULL;
     Node<T> *temp = head;
-    for(int i=0;i<size-1;i++) temp = temp->next;
+    for(int i=0;i<size-1;i++){
+        temp = temp->next;
+    }
     return temp;
 }
 
@@ -302,6 +306,7 @@ void LinkedList<T>::removeNode(const T &data)
         Node<T> *temp = this->getNode(data);
         temp->prev->next = temp->next;
         temp->next->prev = temp->prev;
+        size--;
         delete temp;
     }
 }
@@ -313,6 +318,7 @@ void LinkedList<T>::removeNodeAtIndex(int index)
     Node<T> *temp = getNodeAtIndex(index);
     temp->prev->next = temp->next;
     temp->next->prev = temp->prev;
+    size--;
     delete temp;
 }
 
