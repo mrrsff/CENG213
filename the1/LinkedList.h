@@ -349,10 +349,9 @@ void LinkedList<T>::removeNode(Node<T> *node)
 {
     /* TODO */
     if(this->containsNode(node) == 0) return;
-    Node<T> *before = node->prev;
-    Node<T> *after = node->next;
-    before->next = after;
-    after->prev = before;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    if(node == head) head = head->next;
     size--;
     delete node;
 }

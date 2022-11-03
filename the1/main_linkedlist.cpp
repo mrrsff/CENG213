@@ -15,7 +15,6 @@ int main() {
     list->append(10);
     list->prepend(12);
     list->prepend(12);
-    list->print();
     list2 = list;
     list2->removeNode(12);
     list2->print();
