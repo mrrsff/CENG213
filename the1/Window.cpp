@@ -7,8 +7,8 @@ Window::Window() {
 
 Tab Window::getActiveTab() {
     // TODO
-    if(tabs.isEmpty()) return tabs.getNodeAtIndex(activeTab)->data;
-    else return Tab();
+    if(tabs.isEmpty()) return Tab();
+    else return tabs.getNodeAtIndex(activeTab)->data;
 }
 
 bool Window::isEmpty() const {
@@ -18,8 +18,7 @@ bool Window::isEmpty() const {
 
 void Window::newTab(const Tab &tab) {
     // TODO
-    tabs.insertAtIndex(tab, activeTab + 1);
-    activeTab++;
+    tabs.insertAtIndex(tab,++activeTab);
 }
 
 void Window::closeTab() {
@@ -46,6 +45,7 @@ void Window::changeActiveTabTo(int index) {
 
 void Window::addTab(Node<Tab> &tab) {
     // TODO
+    if(tabs.isEmpty()) activeTab = tabs.getSize();
     tabs.append(tab.data);
 }
 
