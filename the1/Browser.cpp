@@ -12,12 +12,12 @@ void Browser::newWindow() {
 void Browser::closeWindow() {
     // TODO
     if(windows.isEmpty()) return;
-    windows.removeNode(windows.getFirstNode());
+    else windows.removeNodeAtIndex(0);
 }
 
 void Browser::switchToWindow(int index) {
     // TODO
-    if(index > windows.getSize()) return;
+    if(index >= windows.getSize() || index < 0) return;
     windows.moveToIndex(index, 0);
 }
 
@@ -27,41 +27,60 @@ Window &Browser::getWindow(int index) {
 
 void Browser::moveTab(Window &from, Window &to) {
     // TODO
-    Tab tab = from.getActiveTab();
-    Node<Tab> *node = new Node<Tab>(tab);
-    from.closeTab();
-    to.addTab(*node);
+    if(from.isEmpty()) return;
+    else{
+        to.newTab(from.getActiveTab());
+        to.moveActiveTabTo(9999);
+        from.closeTab();
+    }
 }
 
 void Browser::mergeWindows(Window &window1, Window &window2) {
     // TODO
-    while(!window2.isEmpty()){
-        moveTab(window2, window1);
+    if(window2.isEmpty()) return;
+    else{
+        while(!window2.isEmpty()){
+            window2.changeActiveTabTo(0);
+            moveTab(window2, window1);
+        }
     }
 }
 
 void Browser::mergeAllWindows() {
     // TODO
-    while(windows.getSize() > 1){
-        mergeWindows(windows.getNodeAtIndex(0)->data, windows.getNodeAtIndex(1)->data);
+    if(windows.getSize() == 1) return;
+    else{
+        Window window1 = Window();
+        window1.closeTab();
+        for(int i=0;i<windows.getSize();i++){
+            Window window2 = getWindow(i);
+            mergeWindows(window1, window2);
+        }
+        int temp = windows.getSize();
+        closeAllWindows();
+        windows.prepend(window1);
+        Window empty = Window();
+        empty.closeTab();
+        for(int i=0;i<temp-1;i++){
+            windows.append(empty);
+        }
     }
 }
 
 void Browser::closeAllWindows() {
     // TODO
     while(!windows.isEmpty()){
-        closeWindow();
+        windows.removeNodeAtIndex(0);
     }
 }
 
 void Browser::closeEmptyWindows() {
     // TODO
-    Node<Window> *current = windows.getFirstNode();
-    while(current != nullptr){
-        if(current->data.isEmpty()){
-            windows.removeNode(current);
+    for(int i = 0; i < windows.getSize(); i++){
+        if(windows.getNodeAtIndex(i)->data.isEmpty()){
+            windows.removeNodeAtIndex(i);
+            i--;
         }
-        current = current->next;
     }
 }
 

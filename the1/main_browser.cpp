@@ -7,28 +7,34 @@
 #include "Window.h"
 #include "Browser.h"
 
+using namespace std;
+
 int main()
 {
     // You can test your implementations here
-    Browser *browser = new Browser();
-    browser->print();
-    browser->newWindow();
-    browser->newWindow();
-    browser->newWindow();
+    Browser browser;
+    browser.newWindow();
+    browser.newWindow();
+    browser.newWindow();
 
-    browser->getWindow(0).newTab(Tab("a1","a2","a3"));
-    browser->getWindow(0).newTab(Tab("b1","b2","b3"));
-    browser->getWindow(0).newTab(Tab("c1","c2","c3"));
+    browser.getWindow(0).closeTab();
+    browser.getWindow(1).closeTab();
+    browser.getWindow(2).closeTab();
 
-    browser->getWindow(1).newTab(Tab("d1","d2","d3"));
-    browser->getWindow(1).newTab(Tab("e1","e2","e3"));
-    browser->getWindow(1).newTab(Tab("f1","f2","f3"));
 
-    browser->getWindow(2).newTab(Tab("g1","g2","g3"));
-    browser->getWindow(2).newTab(Tab("h1","h2","h3"));
-    browser->getWindow(2).newTab(Tab("i1","i2","i3"));
+    browser.getWindow(0).newTab(Tab("002","001","003"));
+    browser.getWindow(0).newTab(Tab("020","010","030"));
+    browser.getWindow(0).newTab(Tab("022","011","033"));
 
-    browser->print();    
+    browser.getWindow(1).newTab(Tab("202","101","303"));
+    browser.getWindow(1).newTab(Tab("220","110","330"));
+    browser.getWindow(1).newTab(Tab("222","111","333"));
+    browser.getWindow(1).newTab(Tab("200","100","300"));
+
+    browser.getWindow(2).newTab(Tab("002","001","003"));
+
+    browser.mergeAllWindows();
+    browser.print();
 }
 
 #endif //BROWSERPROJECT_MAIN_BROWSER_H
