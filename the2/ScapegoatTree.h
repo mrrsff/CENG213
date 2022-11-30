@@ -49,7 +49,6 @@ public: // DO NOT CHANGE THIS PART.
     const T &getMax() const;
 
     const T &getNext(const T &element) const;
-    
 
 private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
     void print(Node<T> *node, TraversalMethod tp) const;
@@ -68,16 +67,10 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
     }
 
     int getHeightHelper(Node<T> *node) const {
-        /* TODO */
         if(!node) return 0;
         int a = getHeightHelper(node->left);
         int b = getHeightHelper(node->right);
         return 1 + (a > b ? a : b);
-    }
-
-    void balanceHelper(Node<T> *node) const{
-        Node<T> *scapegoat = findScapegoat(node);
-        std::cout << "scapegoat: " << scapegoat->element << std::endl;
     }
 
     void copyHelper(Node<T> *node){
@@ -86,18 +79,70 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
         copyHelper(node->left);
         copyHelper(node->right);
     }
-    Node<T>* findScapegoat(Node<T> *node) const {
+    
+    Node<T>* findScapegoat(Node<T> *node) {
         if(!node) return NULL;
         if(3 * getSizeHelper(node->left) > 2 * getSizeHelper(node) || 3 * getSizeHelper(node->right) > 2 * getSizeHelper(node)){
             return node;
         }
-        Node<T> *left = findScapegoat(node->left);
-        Node<T> *right = findScapegoat(node->right);
-        if(left) return left;
-        if(right) return right;
+        Node<T> *a = findScapegoat(getParent(node));
+        if(a) return a;
         return NULL;
     }
-    
+
+    void rebuildScapegoat(Node<T> *scapegoat){
+        T* arr = nodesSorted(scapegoat);
+        Node<T> *parent = getParent(scapegoat);
+        int scapegoatsize = getSizeHelper(scapegoat);
+        removeSubtree(scapegoat);
+        balanceHelper(arr, 0, scapegoatsize - 1);
+    }
+
+    T* nodesSorted(Node<T> *node){
+        T* arr = new T[getSizeHelper(node)];
+        int i = 0;
+        inorderHelper(node, arr, i);
+        return arr;    
+    }
+
+    T* inorderHelper(Node<T> *node, T* arr, int &i) const{
+        if(!node) return arr;
+        inorderHelper(node->left, arr, i);
+        arr[i++] = node->element;
+        inorderHelper(node->right, arr, i);
+        return arr;
+    }
+
+    Node<T> *getParent(Node<T> *node){
+        if(!root || root == node) return NULL;
+        Node<T> *parent = root;
+        while(parent){
+            if(parent->left == node || parent->right == node) return parent;
+            if(node->element < parent->element) parent = parent->left;
+            else parent = parent->right;
+        }
+        return NULL;
+    }
+
+    void removeSubtree(Node<T> *node){
+        if(!node) return;
+        Node<T> *parent = getParent(node);
+        removeSubtree(node->left);
+        removeSubtree(node->right);
+        if(parent){
+            if(parent->left == node) parent->left = NULL;
+            else parent->right = NULL;
+        }
+        delete node;
+    }
+
+    void balanceHelper(T* arr, int start, int end){
+        if(start > end) return;
+        int mid = (start + end) / 2;
+        this->insert(arr[mid]);
+        balanceHelper(arr, start, mid - 1);
+        balanceHelper(arr, mid + 1, end);
+    }
 
 private: // DO NOT CHANGE THIS PART.
     Node<T> *root;
@@ -131,12 +176,13 @@ ScapegoatTree<T>::~ScapegoatTree() {
 template<class T>
 bool ScapegoatTree<T>::isEmpty() const {
     /* TODO */
-    return root == nullptr;
+    return root == NULL;
 }
 
 template<class T>
 int ScapegoatTree<T>::getHeight() const {
     /* TODO */
+    if(!root) return -1; 
     return getHeightHelper(root);
 }
 
@@ -152,11 +198,15 @@ bool ScapegoatTree<T>::insert(const T &element) {
     Node <T> *node = new Node<T>(element, NULL, NULL);
     if(!root){
         root = node;
-        return true;
-    }
+        upperBound++;
+        return true;    
+    } 
     Node<T> *temp = root;
     while(true){
-        if(element == temp->element) return false;
+        if(element == temp->element){
+            delete node; // delete the node if it already exists
+            return false;
+        }
         if(element < temp->element){
             if(!temp->left){
                 temp->left = node;
@@ -172,7 +222,11 @@ bool ScapegoatTree<T>::insert(const T &element) {
             temp = temp->right;
         }
     }
-    if(getSize() > upperBound) balance();
+    upperBound++;
+    if(getHeight() > (log(upperBound)/log(3.0/2.0))){
+        Node<T> *scapegoat = findScapegoat(temp);
+        rebuildScapegoat(scapegoat);
+    }
     return true;
 }
 
@@ -206,6 +260,12 @@ void ScapegoatTree<T>::print(TraversalMethod tp) const {
     if (tp == preorder) {
         /* TODO */
         /* root, left, right */
+        if (isEmpty()) {
+            // the tree is empty.
+            std::cout << "BST_preorder{}" << std::endl;
+            return;
+        }
+
         std::cout << "BST_preorder{" << std::endl;
         print(root, tp);
         std::cout << std::endl << "}" << std::endl;
@@ -226,6 +286,13 @@ void ScapegoatTree<T>::print(TraversalMethod tp) const {
     } else if (tp == postorder) {
         /* TODO */
         /* left, right, root */
+
+        if (isEmpty()) {
+            // the tree is empty.
+            std::cout << "BST_postorder{}" << std::endl;
+            return;
+        }
+
         std::cout << "BST_postorder{" << std::endl;
         print(root, tp);
         std::cout << std::endl << "}" << std::endl;
@@ -342,6 +409,10 @@ ScapegoatTree<T> &ScapegoatTree<T>::operator=(const ScapegoatTree<T> &rhs) {
 template<class T>
 void ScapegoatTree<T>::balance() {
     /* TODO */
+    T* arr = nodesSorted(root);
+    int tempsize = getSize();
+    removeAllNodes();
+    balanceHelper(arr, 0, tempsize-1);
 }
 
 template<class T>
@@ -357,11 +428,17 @@ const T &ScapegoatTree<T>::getFloor(const T &element) const {
 template<class T>
 const T &ScapegoatTree<T>::getMin() const {
     /* TODO */
+    Node<T> *temp = root;
+    while (temp->left)temp = temp->left;
+    return temp->element;
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getMax() const {
     /* TODO */
+    Node<T> *temp = root;
+    while (temp->right)temp = temp->right;
+    return temp->element;
 }
 
 template<class T>

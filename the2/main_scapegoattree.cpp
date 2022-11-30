@@ -7,8 +7,6 @@ int main() {
 
     ScapegoatTree<int> tree, tree2;
 
-    tree.printPretty();
-
     tree.insert(10);
     tree.insert(5);
     tree.insert(15);
@@ -22,7 +20,7 @@ int main() {
     tree.insert(21);
     tree.insert(22);
 
-    tree.printPretty();
+    /*tree.printPretty();
     // test height
     cout << "height: " << tree.getHeight() << endl;
     // test size
@@ -37,15 +35,9 @@ int main() {
     // test print
     tree.print(inorder);
     tree.print(preorder);
-    tree.print(postorder);
+    tree.print(postorder);*/
 
-    // test copy constructor
-    tree2 = ScapegoatTree<int>(tree);
-    cout << "tree2: "<< endl;
-    tree2.printPretty();
-    cout << "tree: "<< endl;
     tree.printPretty();
-    
 
     return 0;
 }
