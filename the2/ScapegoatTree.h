@@ -138,13 +138,45 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
         }
         delete node;
     }
-
+    
     void balanceHelper(T* arr, int start, int end){
         if(start > end) return;
         int mid = (start + end) / 2;
-        insert(arr[mid]);
+        insertHelper(arr[mid]);
         balanceHelper(arr, start, mid - 1);
         balanceHelper(arr, mid + 1, end);
+    }
+
+    bool insertHelper(const T &element){
+        Node <T> *node = new Node<T>(element, NULL, NULL);
+        if(!root){
+            root = node;
+            upperBound++;
+            return true;    
+        } 
+        Node<T> *temp = root;
+        while(true){
+            if(element == temp->element){
+                delete node; // delete the node if it already exists
+                return false;
+            }
+            if(element < temp->element){
+                if(!temp->left){
+                    temp->left = node;
+                    break;
+                }
+                temp = temp->left;
+            }
+            else{
+                if(!temp->right){
+                    temp->right = node;
+                    break;
+                }
+                temp = temp->right;
+            }
+        }
+        upperBound++;
+        return false;
     }
 
 private: // DO NOT CHANGE THIS PART.
@@ -229,6 +261,7 @@ bool ScapegoatTree<T>::insert(const T &element) {
     if(getHeight() > (log(upperBound)/log(3.0/2.0))){
         Node<T> *scapegoat = findScapegoat(temp, element < temp->element);  
         std::cout << "scapegoat: " << scapegoat->element << std::endl;
+        rebuildScapegoat(scapegoat);
     }
     return true;
 }
@@ -236,6 +269,12 @@ bool ScapegoatTree<T>::insert(const T &element) {
 template<class T>
 bool ScapegoatTree<T>::remove(const T &element) {
     /* TODO */
+    if(!root) return false;
+    if(exists(element)){
+        removeHelper(root, element);
+        return true;
+    }
+    return false;
 }
 
 template<class T>
@@ -448,3 +487,4 @@ template<class T>
 const T &ScapegoatTree<T>::getNext(const T &element) const {
     /* TODO */
 }
+

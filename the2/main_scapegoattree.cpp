@@ -15,10 +15,12 @@ int main() {
     tree.insert(12);
     tree.insert(17);
     tree.insert(18);
+    tree.printPretty();
     tree.insert(19);
     tree.insert(20);
     tree.insert(21);
     tree.insert(22);
+    tree.printPretty();
 
     /*tree.printPretty();
     // test height
@@ -31,15 +33,7 @@ int main() {
     tree.printPretty();
 
     // test get
-    cout << "get: " << tree.get(10) << endl;
-    // test print
-    tree.print(inorder);
-    tree.print(preorder);
-    tree.print(postorder);*/
+    cout << "get: " << tree.get(10) << endl;*/
 
-
-    tree.printPretty();
-    tree.balance();
-    tree.printPretty();
     return 0;
 }
