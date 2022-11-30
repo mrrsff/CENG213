@@ -37,7 +37,9 @@ int main() {
     tree.print(preorder);
     tree.print(postorder);*/
 
-    tree.printPretty();
 
+    tree.printPretty();
+    tree.balance();
+    tree.printPretty();
     return 0;
 }

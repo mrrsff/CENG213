@@ -80,13 +80,16 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
         copyHelper(node->right);
     }
     
-    Node<T>* findScapegoat(Node<T> *node) {
+    Node<T>* findScapegoat(Node<T> *node, bool leftChild) {
         if(!node) return NULL;
-        if(3 * getSizeHelper(node->left) > 2 * getSizeHelper(node) || 3 * getSizeHelper(node->right) > 2 * getSizeHelper(node)){
-            return node;
+        if(leftChild) {
+            if(getSizeHelper(node) * 2 > getSizeHelper(node->left) * 3) return node;
+            return findScapegoat(getParent(node), getParent(node)->left == node);
         }
-        Node<T> *a = findScapegoat(getParent(node));
-        if(a) return a;
+        else {
+            if(getSizeHelper(node) * 2 > getSizeHelper(node->right) * 3) return node;
+            return findScapegoat(getParent(node), getParent(node)->left == node);
+        }
         return NULL;
     }
 
@@ -139,7 +142,7 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
     void balanceHelper(T* arr, int start, int end){
         if(start > end) return;
         int mid = (start + end) / 2;
-        this->insert(arr[mid]);
+        insert(arr[mid]);
         balanceHelper(arr, start, mid - 1);
         balanceHelper(arr, mid + 1, end);
     }
@@ -224,8 +227,8 @@ bool ScapegoatTree<T>::insert(const T &element) {
     }
     upperBound++;
     if(getHeight() > (log(upperBound)/log(3.0/2.0))){
-        Node<T> *scapegoat = findScapegoat(temp);
-        rebuildScapegoat(scapegoat);
+        Node<T> *scapegoat = findScapegoat(temp, element < temp->element);  
+        std::cout << "scapegoat: " << scapegoat->element << std::endl;
     }
     return true;
 }
