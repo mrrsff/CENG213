@@ -50,7 +50,7 @@ public: // DO NOT CHANGE THIS PART.
 
     const T &getNext(const T &element) const;
 
-private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
+private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
     void print(Node<T> *node, TraversalMethod tp) const;
     void printPretty(Node<T> *node, int indentLevel, bool isLeftChild) const;
 
@@ -83,11 +83,11 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
     Node<T>* findScapegoat(Node<T> *node, bool leftChild) {
         if(!node) return NULL;
         if(leftChild) {
-            if(getSizeHelper(node) * 2 > getSizeHelper(node->left) * 3) return node;
+            if(getSizeHelper(node) * 2 < getSizeHelper(node->left) * 3) return node;
             return findScapegoat(getParent(node), getParent(node)->left == node);
         }
         else {
-            if(getSizeHelper(node) * 2 > getSizeHelper(node->right) * 3) return node;
+            if(getSizeHelper(node) * 2 < getSizeHelper(node->right) * 3) return node;
             return findScapegoat(getParent(node), getParent(node)->left == node);
         }
         return NULL;
@@ -98,7 +98,9 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
         Node<T> *parent = getParent(scapegoat);
         int scapegoatsize = getSizeHelper(scapegoat);
         removeSubtree(scapegoat);
-        balanceHelper(arr, 0, scapegoatsize - 1);
+        Node<T> *subroot = nodeBuilder(arr, 0, scapegoatsize - 1, parent);
+        if(subroot->element < parent->element) parent->left = subroot;
+        else parent->right = subroot;
     }
 
     T* nodesSorted(Node<T> *node){
@@ -106,6 +108,15 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE.
         int i = 0;
         inorderHelper(node, arr, i);
         return arr;    
+    }
+
+    Node<T> *nodeBuilder(T* arr, int begin, int end, Node<T> *subroot){
+        if(begin > end) return NULL;
+        int mid = (begin + end) / 2;
+        Node<T> *node = new Node<T>(arr[mid],NULL,NULL);
+        node->left = nodeBuilder(arr, begin, mid - 1, node);
+        node->right = nodeBuilder(arr, mid + 1, end, node);
+        return node;
     }
 
     T* inorderHelper(Node<T> *node, T* arr, int &i) const{
@@ -217,8 +228,7 @@ bool ScapegoatTree<T>::isEmpty() const {
 template<class T>
 int ScapegoatTree<T>::getHeight() const {
     /* TODO */
-    if(!root) return -1; 
-    return getHeightHelper(root);
+    return getHeightHelper(root)-1;
 }
 
 template<class T>
@@ -258,7 +268,7 @@ bool ScapegoatTree<T>::insert(const T &element) {
         }
     }
     upperBound++;
-    if(getHeight() > (log(upperBound)/log(3.0/2.0))){
+    if(getHeight() > (log(upperBound)/(log(3.0)-log(2.0)))){
         Node<T> *scapegoat = findScapegoat(temp, element < temp->element);  
         std::cout << "scapegoat: " << scapegoat->element << std::endl;
         rebuildScapegoat(scapegoat);
