@@ -48,56 +48,81 @@ TreeMap<K, V>::TreeMap() {}
 template<class K, class V>
 void TreeMap<K, V>::clear() {
     /* TODO */
+    stree.removeAllNodes();
 }
 
 template<class K, class V>
 const V &TreeMap<K, V>::get(const K &key) const {
-    /* TODO */
+    /* TODO */ 
+    KeyValuePair<K, V> temp(key, V());
+    return stree.get(temp).getValue();
 }
 
 template<class K, class V>
 bool TreeMap<K, V>::pop(const K &key) {
     /* TODO */
+    KeyValuePair<K, V> temp(key, V());
+    return stree.remove(temp);
 }
 
 template<class K, class V>
 bool TreeMap<K, V>::update(const K &key, const V &value) {
     /* TODO */
+    KeyValuePair<K, V> temp(key, value);
+    return stree.insert(temp);
 }
 
 template<class K, class V>
 const KeyValuePair<K, V> &TreeMap<K, V>::ceilingEntry(const K &key) {
     /* TODO */
+    return stree.getCeiling(KeyValuePair<K, V>(key, V()));
 }
 
 template<class K, class V>
 const KeyValuePair<K, V> &TreeMap<K, V>::floorEntry(const K &key) {
     /* TODO */
+    return stree.getFloor(KeyValuePair<K, V>(key, V()));
 }
 
 template<class K, class V>
 const KeyValuePair<K, V> &TreeMap<K, V>::firstEntry() {
     /* TODO */
+    return stree.getMin();
 }
 
 template<class K, class V>
 const KeyValuePair<K, V> &TreeMap<K, V>::lastEntry() {
     /* TODO */
+    return stree.getMax();
 }
 
 template<class K, class V>
 void TreeMap<K, V>::pollFirstEntry() {
     /* TODO */
+    KeyValuePair<K, V> temp = firstEntry();
+    stree.remove(temp);
 }
 
 template<class K, class V>
 void TreeMap<K, V>::pollLastEntry() {
     /* TODO */
+    KeyValuePair<K, V> temp = lastEntry();
+    stree.remove(temp);
 }
 
 template<class K, class V>
 std::vector<KeyValuePair<K, V> > TreeMap<K, V>::subMap(K fromKey, K toKey) const {
     /* TODO */
+    std::vector<KeyValuePair<K, V> > temp;
+    KeyValuePair<K, V> temp1 = stree.getCeiling(KeyValuePair<K, V>(fromKey, V()));
+    KeyValuePair<K, V> temp2 = stree.getFloor(KeyValuePair<K, V>(toKey, V()));
+    KeyValuePair<K, V> temp3 = temp1;
+    temp.push_back(temp1);
+    while(temp3 != temp2){
+        temp3 = stree.getNext(temp3);
+        temp.push_back(temp3);
+    }
+    return temp;
 }
 
 template<class K, class V>

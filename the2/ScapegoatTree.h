@@ -65,6 +65,75 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
         if(element < node->element) return exists(element, node->left);
         return exists(element, node->right);
     }
+    
+    void removeHelper(T element, Node<T> *node){
+        if(!node) return; 
+        Node<T> *temp = find(element);
+        if(!temp) return;
+        Node<T> *parent = getParent(temp);
+        int i = (temp->left ? 1 : 0) + (temp->right ? 1 : 0);
+        if(!parent){
+            if(i==0){
+                delete temp;
+                root = NULL;
+            }
+            else if(i==1){
+                if(temp->left) root = temp->left;
+                else root = temp->right;
+                delete temp;
+            }
+            else{
+                Node<T> *temp2 = inorderPredecessor(temp);
+                T data = temp2->element;
+                removeHelper(temp2->element, temp2);
+                temp->element = data;
+            }
+        }
+        else{
+            if(i==0){
+                if(parent->left == temp) parent->left = NULL;
+                else parent->right = NULL;
+                delete temp;
+            }
+            else if(i==1){
+                if(parent->left == temp){
+                    if(temp->left) parent->left = temp->left;
+                    else parent->left = temp->right;
+                }
+                else{
+                    if(temp->left) parent->right = temp->left;
+                    else parent->right = temp->right;
+                }
+                delete temp;
+            }
+            else{
+                Node<T> *temp2 = inorderPredecessor(temp);
+                T data = temp2->element;
+                removeHelper(temp2->element, root);
+                temp->element = data;
+            }
+        }
+        if(upperBound/2.0 > getSize()){
+            balance();
+            upperBound = getSize();
+        }
+    }
+
+    Node<T> *find(const T &element){
+        Node<T> *temp = root;
+        while(temp){
+            if(element == temp->element) return temp;
+            if(element < temp->element) temp = temp->left;
+            else temp = temp->right;
+        }
+        return NULL;
+    }
+
+    Node<T> *inorderPredecessor(Node<T> *node){
+        Node<T> *temp = node->left;
+        while(temp->right) temp = temp->right;
+        return temp;
+    }
 
     int getHeightHelper(Node<T> *node) const {
         if(!node) return 0;
@@ -75,7 +144,7 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
 
     void copyHelper(Node<T> *node){
         if(!node) return;
-        this->insert(node->element);
+        this->insertHelper(node->element);
         copyHelper(node->left);
         copyHelper(node->right);
     }
@@ -101,6 +170,7 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
         Node<T> *subroot = nodeBuilder(arr, 0, scapegoatsize - 1, parent);
         if(subroot->element < parent->element) parent->left = subroot;
         else parent->right = subroot;
+        delete[] arr;
     }
 
     T* nodesSorted(Node<T> *node){
@@ -147,7 +217,7 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
             if(parent->left == node) parent->left = NULL;
             else parent->right = NULL;
         }
-        delete node;
+        if(node) delete node;
     }
     
     void balanceHelper(T* arr, int start, int end){
@@ -162,7 +232,6 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
         Node <T> *node = new Node<T>(element, NULL, NULL);
         if(!root){
             root = node;
-            upperBound++;
             return true;    
         } 
         Node<T> *temp = root;
@@ -186,9 +255,9 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
                 temp = temp->right;
             }
         }
-        upperBound++;
         return false;
     }
+
 
 private: // DO NOT CHANGE THIS PART.
     Node<T> *root;
@@ -243,7 +312,7 @@ bool ScapegoatTree<T>::insert(const T &element) {
     Node <T> *node = new Node<T>(element, NULL, NULL);
     if(!root){
         root = node;
-        upperBound++;
+        upperBound = 1;
         return true;    
     } 
     Node<T> *temp = root;
@@ -268,9 +337,8 @@ bool ScapegoatTree<T>::insert(const T &element) {
         }
     }
     upperBound++;
-    if(getHeight() > (log(upperBound)/(log(3.0)-log(2.0)))){
+    if(getHeight() > (log(upperBound)/(log(1.5)))){
         Node<T> *scapegoat = findScapegoat(temp, element < temp->element);  
-        std::cout << "scapegoat: " << scapegoat->element << std::endl;
         rebuildScapegoat(scapegoat);
     }
     return true;
@@ -280,18 +348,17 @@ template<class T>
 bool ScapegoatTree<T>::remove(const T &element) {
     /* TODO */
     if(!root) return false;
-    if(exists(element)){
-        removeHelper(root, element);
-        return true;
-    }
-    return false;
+    if(!exists(element,root)) return false;
+    removeHelper(element, root);
+    return true;
 }
 
 template<class T>
 void ScapegoatTree<T>::removeAllNodes() {
     /* TODO */
+    removeSubtree(root);
     root = NULL;
-    upperBound = 0;    
+    upperBound = 0;
 }
 
 template<class T>
@@ -465,36 +532,86 @@ void ScapegoatTree<T>::balance() {
     int tempsize = getSize();
     removeAllNodes();
     balanceHelper(arr, 0, tempsize-1);
+    upperBound = tempsize;
+    delete [] arr;
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getCeiling(const T &element) const {
     /* TODO */
+    Node<T> *temp = root;
+    Node<T> *prev = NULL;
+    while(temp){
+        if(element == temp->element) return temp->element;
+        if(element < temp->element){
+            prev = temp;
+            temp = temp->left;
+        }
+        else temp = temp->right;
+    }
+    if(prev) return prev->element;
+    throw NoSuchItemException();
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getFloor(const T &element) const {
     /* TODO */
+    Node<T> *temp = root;
+    Node<T> *prev = NULL;
+    while(temp){
+        if(element == temp->element) return temp->element;
+        if(element > temp->element){
+            prev = temp;
+            temp = temp->right;
+        }
+        else temp = temp->left;
+    }
+    if(prev) return prev->element;
+    throw NoSuchItemException();
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getMin() const {
     /* TODO */
+    if(isEmpty()) throw NoSuchItemException();
     Node<T> *temp = root;
-    while (temp->left)temp = temp->left;
+    while(temp->left) temp = temp->left;
     return temp->element;
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getMax() const {
     /* TODO */
+    if(isEmpty()) throw NoSuchItemException();
     Node<T> *temp = root;
-    while (temp->right)temp = temp->right;
+    while(temp->right) temp = temp->right;
     return temp->element;
 }
 
 template<class T>
 const T &ScapegoatTree<T>::getNext(const T &element) const {
     /* TODO */
+    Node<T> *temp = root;
+    Node<T> *prev = NULL;
+    while(temp){
+        if(element == temp->element){
+            if(temp->right){
+                temp = temp->right;
+                while(temp->left) temp = temp->left;
+                return temp->element;
+            }
+            else{
+                if(prev) return prev->element;
+                else throw NoSuchItemException();
+            }
+        }
+        if(element < temp->element){
+            prev = temp;
+            temp = temp->left;
+        }
+        else temp = temp->right;
+    }
+    if(prev) return prev->element;
+    throw NoSuchItemException();
 }
 
