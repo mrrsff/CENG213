@@ -217,6 +217,7 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
             if(parent->left == node) parent->left = NULL;
             else parent->right = NULL;
         }
+        if(node == root) root = NULL;
         if(node) delete node;
     }
     
@@ -521,6 +522,7 @@ ScapegoatTree<T> &ScapegoatTree<T>::operator=(const ScapegoatTree<T> &rhs) {
     if(this != &rhs){
         removeAllNodes();
         copyHelper(rhs.root);
+        upperBound = rhs.upperBound;
     }
     return *this;
 }
