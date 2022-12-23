@@ -244,19 +244,20 @@ private: // YOU MAY ADD YOUR OWN UTILITY MEMBER FUNCTIONS HERE
             if(element < temp->element){
                 if(!temp->left){
                     temp->left = node;
-                    break;
+                    return true;
                 }
                 temp = temp->left;
             }
             else{
                 if(!temp->right){
                     temp->right = node;
-                    break;
+                    return true;
                 }
                 temp = temp->right;
             }
         }
-        return false;
+        upperBound++;
+        return true;
     }
 
 
